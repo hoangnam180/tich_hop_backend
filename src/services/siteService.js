@@ -2,8 +2,6 @@ const { conn, pool } = require('../config/connectDatabase');
 const { concat, forEach, get } = require('lodash');
 const payrollemployeesSevices = async (req, res) => {
   return new Promise(async (resolve, reject) => {
-    const sql = 'SELECT * FROM `employee`';
-    console.log('employee', sql);
     try {
       const sql = 'SELECT * FROM `employee`';
       const [employee] = await pool.execute(sql);
@@ -17,16 +15,32 @@ const payrollemployeesSevices = async (req, res) => {
     }
   });
 };
+
+const benefitPlanSevices = async (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `select * from Benefit_Plans`;
+      const benefitPlans = await conn.query(sql);
+      if (benefitPlans?.recordset) {
+        resolve(benefitPlans?.recordset);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const PersonalSqlSeverServices = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const sqlSeverEmployment = `select jh.Department, p.Employee_ID, p.First_Name, p.Last_Name, p.Address1, p.Address2,p.Email,
-    p.Gender, p.Ethnicity, b.Deductable,b.Plan_Name ,e.Employment_Status
+      const sqlSeverEmployment = `select jh.Department, p.Employee_ID,p.Phone_Number, p.First_Name, p.Last_Name, p.Address1, p.Address2,p.Email,
+    p.Gender,p.Shareholder_Status, p.Ethnicity, b.Deductable,b.Plan_Name ,e.Employment_Status
     from Personal p inner join Job_History jh on p.Employee_ID = jh.Employee_ID
     inner join Employment e on p.Employee_ID = e.Employee_ID 
     inner join Benefit_Plans b on p.Benefit_Plans = b.Benefit_Plan_ID`;
       const employments = await conn.query(sqlSeverEmployment);
-      console.log('test', employments);
       if (employments?.recordset) {
         resolve(employments?.recordset);
       } else {
@@ -37,10 +51,26 @@ const PersonalSqlSeverServices = async (req, res) => {
     }
   });
 };
+const jobHistorySevices = async (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `select Department,Start_Date,End_Date,Job_Title,Location,Hours_per_Week from Job_History`;
+      const jobHistory = await conn.query(sql);
+      if (jobHistory?.recordset) {
+        resolve(jobHistory?.recordset);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const totalEarningSevices = async (req, res) => {
   return new Promise(async (resolve, reject) => {
-    const sqlSeverEmployment = `select jh.Department, p.Employee_ID, p.First_Name, p.Last_Name, p.Address1, p.Address2,p.Email,
-    p.Gender, p.Ethnicity, b.Deductable,b.Plan_Name ,e.Employment_Status
+    const sqlSeverEmployment = `select jh.Department, p.Employee_ID, p.First_Name, p.Last_Name, 
+    p.Gender, p.Ethnicity, b.Deductable, e.Employment_Status
     from Personal p inner join Job_History jh on p.Employee_ID = jh.Employee_ID
     inner join Employment e on p.Employee_ID = e.Employee_ID 
     inner join Benefit_Plans b on p.Benefit_Plans = b.Benefit_Plan_ID`;
@@ -87,4 +117,6 @@ module.exports = {
   payrollemployeesSevices,
   totalEarningSevices,
   PersonalSqlSeverServices,
+  benefitPlanSevices,
+  jobHistorySevices,
 };

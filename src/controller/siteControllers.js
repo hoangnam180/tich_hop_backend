@@ -2,6 +2,8 @@ const {
   payrollemployeesSevices,
   totalEarningSevices,
   PersonalSqlSeverServices,
+  benefitPlanSevices,
+  jobHistorySevices,
 } = require('../services/siteService');
 class siteControllers {
   // [GET] REGISTER
@@ -10,6 +12,45 @@ class siteControllers {
       test: 'test',
     });
   };
+
+  benefits = async (req, res) => {
+    try {
+      const benefitPlans = await benefitPlanSevices(req, res);
+      if (benefitPlans) {
+        return res.status(200).json({
+          data: benefitPlans,
+        });
+      } else {
+        return res.status(200).json({
+          data: [],
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: 'Server error',
+      });
+    }
+  };
+
+  jobHistory = async (req, res) => {
+    try {
+      const jobHistory = await jobHistorySevices(req, res);
+      if (jobHistory) {
+        return res.status(200).json({
+          data: jobHistory,
+        });
+      } else {
+        return res.status(200).json({
+          data: [],
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: 'Server error',
+      });
+    }
+  };
+
   personals = async (req, res) => {
     try {
       const data = await PersonalSqlSeverServices();
