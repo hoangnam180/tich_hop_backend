@@ -2,6 +2,8 @@ const { conn, pool } = require('../config/connectDatabase');
 const { concat, forEach, get } = require('lodash');
 const payrollemployeesSevices = async (req, res) => {
   return new Promise(async (resolve, reject) => {
+    const sql = 'SELECT * FROM `employee`';
+    console.log('employee', sql);
     try {
       const sql = 'SELECT * FROM `employee`';
       const [employee] = await pool.execute(sql);

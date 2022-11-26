@@ -17,10 +17,14 @@ const sqlServerConfig = {
   },
 };
 sql.connect(sqlServerConfig, function (err) {
-  if (err) {
-    console.log('err', err);
-  } else {
-    console.log('connected');
+  try {
+    if (err) {
+      console.log('err', err);
+    } else {
+      console.log('connected');
+    }
+  } catch (err) {
+    console.log(err);
   }
 });
 const conn = new sql.Request();
