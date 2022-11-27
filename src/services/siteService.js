@@ -85,24 +85,38 @@ const totalEarningSevices = async (req, res) => {
       const [employees] = await pool.execute(mysqlEmployee);
 
       const data = concat(employees, employments.recordset);
-      forEach(data, (el, index) => {
-        if (groupByEmployee[get(el, 'Employee_ID')]) {
-          groupByEmployee[get(el, 'Employee_ID')] = {
-            ...groupByEmployee[get(el, 'Employee_ID')],
-            ...el,
-          };
-        } else {
-          groupByEmployee[get(el, 'Employee_ID')] = {};
-          groupByEmployee[get(el, 'Employee_ID')] = {
-            ...groupByEmployee[get(el, 'Employee_ID')],
-            ...el,
-          };
+      const dataConvert = data?.map((item)=>{
+        return {
+          Employee_ID : item?.Employee_ID,
+          value : 
+            {...item}
+          
         }
-      });
-      if (data && groupByEmployee) {
+      })
+      var output = dataConvert.reduce(function(o, cur) {
+        var occurs = o.reduce(function(n, item, i) {
+          return (item.Employee_ID === cur.Employee_ID) ? i : n;
+        }, -1);
+        if (occurs >= 0) {
+          o[occurs].value = o[occurs].value.concat(cur.value);
+        } else {
+          var obj = {
+            Employee_ID: cur.Employee_ID,
+            value: [cur.value]
+          };
+          o = o.concat([obj]);
+        }
+        return o;
+      }, []);
+      
+     const result = output?.map((item)=>{
+      const newValue = {...item?.value?.[0],...item?.value?.[1]}
+      return newValue
+     })
+      if (data && result) {
         resolve({
           data,
-          groupByEmployee,
+          groupByEmployee : result,
         });
       } else {
         resolve(false);

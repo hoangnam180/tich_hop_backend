@@ -81,7 +81,7 @@ class siteControllers {
       const { data, groupByEmployee } = await totalEarningSevices();
       if (data && groupByEmployee) {
         return res.status(200).json({
-          data,
+         data : groupByEmployee,
           code: 1,
         });
       } else {
