@@ -4,6 +4,8 @@ const {
   PersonalSqlSeverServices,
   benefitPlanSevices,
   jobHistorySevices,
+  payRateIdSevices,
+  addTotalEarningSevicesMySql,
 } = require('../services/siteService');
 class siteControllers {
   // [GET] REGISTER
@@ -76,18 +78,90 @@ class siteControllers {
       });
     }
   };
-  totalEarning = async (req, res) => {
+  payRateId = async (req, res) => {
     try {
-      const { data, groupByEmployee } = await totalEarningSevices();
-      if (data && groupByEmployee) {
+      const data = await payRateIdSevices();
+      if (data) {
         return res.status(200).json({
-         data : groupByEmployee,
+          data,
           code: 1,
         });
       } else {
         return res.status(500).json({
           message: 'no data',
           code: 0,
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e,
+      });
+    }
+  };
+  totalEarning = async (req, res) => {
+    try {
+      const { data, groupByEmployee } = await totalEarningSevices();
+      if (data && groupByEmployee) {
+        return res.status(200).json({
+          data: groupByEmployee,
+          code: 1,
+        });
+      } else {
+        return res.status(500).json({
+          message: 'no data',
+          code: 0,
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e,
+      });
+    }
+  };
+  addTotalEarning = async (req, res) => {
+    const {
+      Employee_Number,
+      Employee_ID,
+      Last_Name,
+      First_Name,
+      Pay_Rate,
+      PayRates_id,
+      Vacation_Days,
+      Paid_To_Date,
+      Paid_Last_Year,
+    } = req.body;
+    if (
+      !Employee_Number ||
+      !Employee_ID ||
+      !Last_Name ||
+      !First_Name ||
+      !Pay_Rate ||
+      !PayRates_id ||
+      !Vacation_Days ||
+      !Paid_To_Date ||
+      !Paid_Last_Year
+    ) {
+      return res.status(500).json({
+        message: 'Missing data',
+      });
+    }
+    try {
+      const data = await addTotalEarningSevicesMySql(
+        Employee_Number,
+        Employee_ID,
+        Last_Name,
+        First_Name,
+        Pay_Rate,
+        PayRates_id,
+        Vacation_Days,
+        Paid_To_Date,
+        Paid_Last_Year
+      );
+      console.log(data);
+      if (data) {
+        return res.status(200).json({
+          data,
+          code: 1,
         });
       }
     } catch (e) {

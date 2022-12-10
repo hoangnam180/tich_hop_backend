@@ -1,5 +1,5 @@
 const { conn, pool } = require('../config/connectDatabase');
-const { concat, forEach, get } = require('lodash');
+const { concat } = require('lodash');
 const payrollemployeesSevices = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -23,6 +23,22 @@ const benefitPlanSevices = async (req, res) => {
       const benefitPlans = await conn.query(sql);
       if (benefitPlans?.recordset) {
         resolve(benefitPlans?.recordset);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const payRateIdSevices = async (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `SELECT pay_rates.Pay_Rate_Name,pay_rates.idPay_Rates FROM pay_rates`;
+      const [pay_ratesId] = await pool.execute(sql);
+      if (pay_ratesId) {
+        resolve(pay_ratesId);
       } else {
         resolve(false);
       }
@@ -85,38 +101,36 @@ const totalEarningSevices = async (req, res) => {
       const [employees] = await pool.execute(mysqlEmployee);
 
       const data = concat(employees, employments.recordset);
-      const dataConvert = data?.map((item)=>{
+      const dataConvert = data?.map((item) => {
         return {
-          Employee_ID : item?.Employee_ID,
-          value : 
-            {...item}
-          
-        }
-      })
-      var output = dataConvert.reduce(function(o, cur) {
-        var occurs = o.reduce(function(n, item, i) {
-          return (item.Employee_ID === cur.Employee_ID) ? i : n;
+          Employee_ID: item?.Employee_ID,
+          value: { ...item },
+        };
+      });
+      var output = dataConvert.reduce(function (o, cur) {
+        var occurs = o.reduce(function (n, item, i) {
+          return item.Employee_ID === cur.Employee_ID ? i : n;
         }, -1);
         if (occurs >= 0) {
           o[occurs].value = o[occurs].value.concat(cur.value);
         } else {
           var obj = {
             Employee_ID: cur.Employee_ID,
-            value: [cur.value]
+            value: [cur.value],
           };
           o = o.concat([obj]);
         }
         return o;
       }, []);
-      
-     const result = output?.map((item)=>{
-      const newValue = {...item?.value?.[0],...item?.value?.[1]}
-      return newValue
-     })
+
+      const result = output?.map((item) => {
+        const newValue = { ...item?.value?.[0], ...item?.value?.[1] };
+        return newValue;
+      });
       if (data && result) {
         resolve({
           data,
-          groupByEmployee : result,
+          groupByEmployee: result,
         });
       } else {
         resolve(false);
@@ -126,11 +140,48 @@ const totalEarningSevices = async (req, res) => {
     }
   });
 };
-
+const addTotalEarningSevicesMySql = async (
+  Employee_Number,
+  Employee_ID,
+  Last_Name,
+  First_Name,
+  Pay_Rate,
+  PayRates_id,
+  Vacation_Days,
+  Paid_To_Date,
+  Paid_Last_Year
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      console.log(
+        Employee_Number,
+        Employee_ID,
+        Last_Name,
+        First_Name,
+        Pay_Rate,
+        PayRates_id,
+        Vacation_Days,
+        Paid_To_Date,
+        Paid_Last_Year
+      );
+      const sql = `INSERT INTO employee(Employee_Number, idEmployee, Last_Name, First_Name,Pay_Rate, PayRates_id, Vacation_Days, Paid_To_Date, Paid_Last_Year) VALUES (${Employee_Number},${Employee_ID},'${Last_Name}','${First_Name}',${Pay_Rate},${PayRates_id},${Vacation_Days},${Paid_To_Date},${Paid_Last_Year})`;
+      const addTotalEarning = await pool.execute(sql);
+      if (addTotalEarning) {
+        resolve(addTotalEarning);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   payrollemployeesSevices,
   totalEarningSevices,
   PersonalSqlSeverServices,
   benefitPlanSevices,
   jobHistorySevices,
+  payRateIdSevices,
+  addTotalEarningSevicesMySql,
 };
