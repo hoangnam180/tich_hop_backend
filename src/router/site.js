@@ -12,6 +12,7 @@ router.get('/ethnicity', siteControllers.getEthnicity);
 router.get('/deductable', siteControllers.getDeductable);
 router.get('/benefit', siteControllers.getBenefit);
 router.post('/total-earning', siteControllers.addTotalEarning);
+router.delete('/total-earning/:id', siteControllers.deleteTotalEarning);
 router.get('/', siteControllers.index);
 
 module.exports = router;

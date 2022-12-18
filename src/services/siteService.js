@@ -129,6 +129,44 @@ const BenefitServices = async (req, res) => {
     }
   });
 };
+const DeleteMySqlServices = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `DELETE FROM employee WHERE idEmployee = ${id}`;
+      const Delete = await pool.execute(sql);
+      console.log(Delete);
+      if (Delete) {
+        resolve(Delete);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+const DeleteMySQLSeverServices = async (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql1 = `Delete From Job_History where Employee_ID = ${id}`;
+      const Delete1 = await conn.query(sql1);
+      const sql2 = `Delete From Employment where Employee_ID = ${id}`;
+      const Delete2 = await conn.query(sql2);
+      const sql3 = `Delete From Personal where Employee_ID = ${id}`;
+      const Delete3 = await conn.query(sql3);
+      console.log(
+        Delete1?.recordset && Delete2?.recordset && Delete3?.recordset
+      );
+      if (Delete1?.recordset && Delete2?.recordset && Delete3?.recordset) {
+        resolve(Delete1?.recordset && Delete2?.recordset && Delete3?.recordset);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
 const totalEarningSevices = async (req, res) => {
   return new Promise(async (resolve, reject) => {
@@ -258,4 +296,6 @@ module.exports = {
   DeductableServices,
   addTotalEarningSevicesSqlSever,
   BenefitServices,
+  DeleteMySQLSeverServices,
+  DeleteMySqlServices,
 };

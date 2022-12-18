@@ -10,6 +10,8 @@ const {
   DeductableServices,
   addTotalEarningSevicesSqlSever,
   BenefitServices,
+  DeleteMySQLSeverServices,
+  DeleteMySqlServices,
 } = require('../services/siteService');
 class siteControllers {
   // [GET] REGISTER
@@ -102,6 +104,31 @@ class siteControllers {
       });
     }
   };
+
+  deleteTotalEarning = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const data = await DeleteMySQLSeverServices(id);
+      const data2 = await DeleteMySqlServices(id);
+      if (data && data2) {
+        return res.status(200).json({
+          data,
+          data2,
+          code: 1,
+        });
+      } else {
+        return res.status(500).json({
+          message: 'no data',
+          code: 0,
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e,
+      });
+    }
+  };
+
   totalEarning = async (req, res) => {
     try {
       const { data, groupByEmployee } = await totalEarningSevices();
