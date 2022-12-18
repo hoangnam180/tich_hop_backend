@@ -114,6 +114,21 @@ const DeductableServices = async (req, res) => {
     }
   });
 };
+const BenefitServices = async (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `select Benefit_Plans.Benefit_Plan_ID from Benefit_Plans`;
+      const Benefit = await conn.query(sql);
+      if (Benefit?.recordset) {
+        resolve(Benefit?.recordset);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 
 const totalEarningSevices = async (req, res) => {
   return new Promise(async (resolve, reject) => {
@@ -205,16 +220,21 @@ const addTotalEarningSevicesSqlSever = async (
   Shareholder_Status,
   Ethnicity,
   Employment_Status,
-  Department
+  Department,
+  Benefit_Plans
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const sql1 = `insert into Personal(Employee_ID, First_Name,Last_Name, Gender, Shareholder_Status, Ethnicity) values ('${Employee_ID}',N'${First_Name}',N'${Last_Name}','${Gender}','${Shareholder_Status}','${Ethnicity}')`;
+      const sql1 = `insert into Personal (Employee_ID, First_Name,Last_Name, Gender, Shareholder_Status, Benefit_Plans, Ethnicity) values ('${Employee_ID}',N'${First_Name}',N'${Last_Name}','${Gender}','${Shareholder_Status}',${Benefit_Plans},'${Ethnicity}')`;
       const addTotalEarning = await conn.query(sql1);
       const sql2 = `insert into Employment (Employee_ID, Employment_Status) values ('${Employee_ID}',N'${Employment_Status}')`;
       const addTotalEarning2 = await conn.query(sql2);
       const sql3 = `insert into Job_History (Employee_ID, Department) values ('${Employee_ID}',N'${Department}')`;
       const addTotalEarning3 = await conn.query(sql3);
+      console.log(addTotalEarning);
+      console.log(addTotalEarning2);
+      console.log(addTotalEarning3);
+
       if (addTotalEarning && addTotalEarning2 && addTotalEarning3) {
         resolve(addTotalEarning);
       } else {
@@ -237,4 +257,5 @@ module.exports = {
   EthnicityServices,
   DeductableServices,
   addTotalEarningSevicesSqlSever,
+  BenefitServices,
 };

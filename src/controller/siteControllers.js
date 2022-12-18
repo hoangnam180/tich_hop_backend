@@ -9,6 +9,7 @@ const {
   EthnicityServices,
   DeductableServices,
   addTotalEarningSevicesSqlSever,
+  BenefitServices,
 } = require('../services/siteService');
 class siteControllers {
   // [GET] REGISTER
@@ -162,6 +163,26 @@ class siteControllers {
       });
     }
   };
+  getBenefit = async (req, res) => {
+    try {
+      const data = await BenefitServices();
+      if (data) {
+        return res.status(200).json({
+          data,
+          code: 1,
+        });
+      } else {
+        return res.status(500).json({
+          message: 'no data',
+          code: 0,
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e,
+      });
+    }
+  };
   addTotalEarning = async (req, res) => {
     const {
       Employee_Number,
@@ -178,6 +199,7 @@ class siteControllers {
       Ethnicity,
       Employment_Status,
       Department,
+      Benefit_Plans,
     } = req.body;
     if (
       !Employee_Number ||
@@ -188,7 +210,8 @@ class siteControllers {
       !PayRates_id ||
       !Vacation_Days ||
       !Paid_To_Date ||
-      !Paid_Last_Year
+      !Paid_Last_Year ||
+      !Benefit_Plans
     ) {
       return res.status(500).json({
         message: 'Missing data',
@@ -214,7 +237,8 @@ class siteControllers {
         Shareholder_Status,
         Ethnicity,
         Employment_Status,
-        Department
+        Department,
+        Benefit_Plans
       );
       if (datasqlServer && data) {
         return res.status(200).json({
