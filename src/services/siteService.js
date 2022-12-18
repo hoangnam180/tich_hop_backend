@@ -83,6 +83,38 @@ const jobHistorySevices = async (req, res) => {
   });
 };
 
+const EthnicityServices = async (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `select Personal.Ethnicity from Personal`;
+      const personal = await conn.query(sql);
+      if (personal?.recordset) {
+        resolve(personal?.recordset);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const DeductableServices = async (req, res) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `select Benefit_Plans.Deductable from Benefit_Plans`;
+      const Deductable = await conn.query(sql);
+      if (Deductable?.recordset) {
+        resolve(Deductable?.recordset);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const totalEarningSevices = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     const sqlSeverEmployment = `select jh.Department, p.Employee_ID, p.First_Name, p.Last_Name, 
@@ -153,17 +185,6 @@ const addTotalEarningSevicesMySql = async (
 ) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(
-        Employee_Number,
-        Employee_ID,
-        Last_Name,
-        First_Name,
-        Pay_Rate,
-        PayRates_id,
-        Vacation_Days,
-        Paid_To_Date,
-        Paid_Last_Year
-      );
       const sql = `INSERT INTO employee(Employee_Number, idEmployee, Last_Name, First_Name,Pay_Rate, PayRates_id, Vacation_Days, Paid_To_Date, Paid_Last_Year) VALUES (${Employee_Number},${Employee_ID},'${Last_Name}','${First_Name}',${Pay_Rate},${PayRates_id},${Vacation_Days},${Paid_To_Date},${Paid_Last_Year})`;
       const addTotalEarning = await pool.execute(sql);
       if (addTotalEarning) {
@@ -176,6 +197,35 @@ const addTotalEarningSevicesMySql = async (
     }
   });
 };
+const addTotalEarningSevicesSqlSever = async (
+  Employee_ID,
+  Last_Name,
+  First_Name,
+  Gender,
+  Shareholder_Status,
+  Ethnicity,
+  Employment_Status,
+  Department
+) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql1 = `insert into Personal(Employee_ID, First_Name,Last_Name, Gender, Shareholder_Status, Ethnicity) values ('${Employee_ID}',N'${First_Name}',N'${Last_Name}','${Gender}','${Shareholder_Status}','${Ethnicity}')`;
+      const addTotalEarning = await conn.query(sql1);
+      const sql2 = `insert into Employment (Employee_ID, Employment_Status) values ('${Employee_ID}',N'${Employment_Status}')`;
+      const addTotalEarning2 = await conn.query(sql2);
+      const sql3 = `insert into Job_History (Employee_ID, Department) values ('${Employee_ID}',N'${Department}')`;
+      const addTotalEarning3 = await conn.query(sql3);
+      if (addTotalEarning && addTotalEarning2 && addTotalEarning3) {
+        resolve(addTotalEarning);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
+  });
+};
 module.exports = {
   payrollemployeesSevices,
   totalEarningSevices,
@@ -184,4 +234,7 @@ module.exports = {
   jobHistorySevices,
   payRateIdSevices,
   addTotalEarningSevicesMySql,
+  EthnicityServices,
+  DeductableServices,
+  addTotalEarningSevicesSqlSever,
 };

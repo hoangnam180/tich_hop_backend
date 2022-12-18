@@ -6,6 +6,9 @@ const {
   jobHistorySevices,
   payRateIdSevices,
   addTotalEarningSevicesMySql,
+  EthnicityServices,
+  DeductableServices,
+  addTotalEarningSevicesSqlSever,
 } = require('../services/siteService');
 class siteControllers {
   // [GET] REGISTER
@@ -118,6 +121,47 @@ class siteControllers {
       });
     }
   };
+  getEthnicity = async (req, res) => {
+    console.log('getEthnicity');
+    try {
+      const data = await EthnicityServices();
+      if (data) {
+        return res.status(200).json({
+          data,
+          code: 1,
+        });
+      } else {
+        return res.status(500).json({
+          message: 'no data',
+          code: 0,
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e,
+      });
+    }
+  };
+  getDeductable = async (req, res) => {
+    try {
+      const data = await DeductableServices();
+      if (data) {
+        return res.status(200).json({
+          data,
+          code: 1,
+        });
+      } else {
+        return res.status(500).json({
+          message: 'no data',
+          code: 0,
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e,
+      });
+    }
+  };
   addTotalEarning = async (req, res) => {
     const {
       Employee_Number,
@@ -129,6 +173,11 @@ class siteControllers {
       Vacation_Days,
       Paid_To_Date,
       Paid_Last_Year,
+      Gender,
+      Shareholder_Status,
+      Ethnicity,
+      Employment_Status,
+      Department,
     } = req.body;
     if (
       !Employee_Number ||
@@ -157,10 +206,20 @@ class siteControllers {
         Paid_To_Date,
         Paid_Last_Year
       );
-      console.log(data);
-      if (data) {
+      const datasqlServer = await addTotalEarningSevicesSqlSever(
+        Employee_ID,
+        Last_Name,
+        First_Name,
+        Gender,
+        Shareholder_Status,
+        Ethnicity,
+        Employment_Status,
+        Department
+      );
+      if (datasqlServer && data) {
         return res.status(200).json({
           data,
+          datasqlServer,
           code: 1,
         });
       }
