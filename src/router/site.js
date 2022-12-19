@@ -12,6 +12,7 @@ router.get('/ethnicity', siteControllers.getEthnicity);
 router.get('/deductable', siteControllers.getDeductable);
 router.get('/benefit', siteControllers.getBenefit);
 router.post('/total-earning', siteControllers.addTotalEarning);
+router.put('/total-earning/:id', siteControllers.updateTotalEarning);
 router.delete('/total-earning/:id', siteControllers.deleteTotalEarning);
 router.get('/', siteControllers.index);
 

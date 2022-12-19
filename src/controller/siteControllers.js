@@ -12,6 +12,8 @@ const {
   BenefitServices,
   DeleteMySQLSeverServices,
   DeleteMySqlServices,
+  UpdateMySqlServices,
+  UpdateSQLSeverServices,
 } = require('../services/siteService');
 class siteControllers {
   // [GET] REGISTER
@@ -113,6 +115,71 @@ class siteControllers {
       if (data && data2) {
         return res.status(200).json({
           data,
+          data2,
+          code: 1,
+        });
+      } else {
+        return res.status(500).json({
+          message: 'no data',
+          code: 0,
+        });
+      }
+    } catch (e) {
+      return res.status(500).json({
+        message: e,
+      });
+    }
+  };
+
+  updateTotalEarning = async (req, res) => {
+    const {
+      Employee_Number,
+      Employee_ID,
+      Last_Name,
+      First_Name,
+      Pay_Rate,
+      PayRates_id,
+      Vacation_Days,
+      Paid_To_Date,
+      Paid_Last_Year,
+      Gender,
+      Shareholder_Status,
+      Ethnicity,
+      Employment_Status,
+      Department,
+      Benefit_Plans,
+    } = req.body;
+    const { id } = req.params;
+    if (!id) {
+      return res.status(500).json({
+        message: 'Missing data',
+      });
+    }
+    try {
+      const dataMysql = {
+        Last_Name,
+        First_Name,
+        Pay_Rate,
+        PayRates_id,
+        Vacation_Days,
+        Paid_To_Date,
+        Paid_Last_Year,
+      };
+      const dataSqlSever = {
+        Last_Name,
+        Gender,
+        Shareholder_Status,
+        Benefit_Plans,
+        Ethnicity,
+        Department,
+        Employment_Status,
+        First_Name,
+      };
+      const data2 = await UpdateMySqlServices(id, dataMysql);
+      const data3 = await UpdateSQLSeverServices(id, dataSqlSever);
+      if (data3 && data2) {
+        return res.status(200).json({
+          data3,
           data2,
           code: 1,
         });

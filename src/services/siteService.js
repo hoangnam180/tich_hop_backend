@@ -145,6 +145,61 @@ const DeleteMySqlServices = async (id) => {
     }
   });
 };
+
+const UpdateMySqlServices = async (id, data, data2) => {
+  const {
+    Last_Name,
+    First_Name,
+    Pay_Rate,
+    PayRates_id,
+    Vacation_Days,
+    Paid_To_Date,
+    Paid_Last_Year,
+  } = data;
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `UPDATE employee SET Last_Name='${Last_Name}',First_Name='${First_Name}',Pay_Rate='${Pay_Rate}',PayRates_id='${PayRates_id}',Vacation_Days='${Vacation_Days}',Paid_To_Date='${Paid_To_Date}',Paid_Last_Year='${Paid_Last_Year}' WHERE idEmployee = ${id}`;
+      const Update1 = await pool.execute(sql);
+      console.log(Update1);
+      if (Update1) {
+        resolve(Update1);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+const UpdateSQLSeverServices = async (id, data) => {
+  const {
+    Last_Name,
+    Gender,
+    Shareholder_Status,
+    Benefit_Plans,
+    Ethnicity,
+    Department,
+    Employment_Status,
+    First_Name,
+  } = data;
+  return new Promise(async (resolve, reject) => {
+    try {
+      const sql = `UPDATE Personal SET First_Name ='${First_Name}', Last_Name = '${Last_Name}', Gender='${Gender}', Shareholder_Status='${Shareholder_Status}', Benefit_Plans='${Benefit_Plans}', Ethnicity='${Ethnicity}' where Employee_ID = '${id}'
+      UPDATE Job_History SET Department ='${Department}' where Employee_ID = '${id}'
+      UPDATE Employment SET Employment_Status ='${Employment_Status}' where Employee_ID = '${id}'`;
+      const Update = await conn.query(sql);
+      console.log(Update?.recordset);
+      if (Update?.recordset) {
+        resolve(Update?.recordset);
+      } else {
+        resolve('error');
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 const DeleteMySQLSeverServices = async (id) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -298,4 +353,6 @@ module.exports = {
   BenefitServices,
   DeleteMySQLSeverServices,
   DeleteMySqlServices,
+  UpdateMySqlServices,
+  UpdateSQLSeverServices,
 };
